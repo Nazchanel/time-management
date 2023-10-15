@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <title>Time Management Dashboard</title>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Time Management Dashboard</a>
+</nav>
+
+<div class="container mt-4">
+  <div class="alert alert-success" role="alert">
+    <h4 class="alert-heading">Welcome, {{ username }}!</h4>
+    <p>This dashboard is designed to help you organize your tasks and manage your time efficiently. Stay focused, stay organized, and make the most out of your high school experience!</p>
+    <hr>
+    <p class="mb-0">Start by checking your upcoming tasks and planning your week below.</p>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-4 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Upcoming Tasks</h5>
+          <!-- List upcoming tasks here -->
+          <ul class="list-group">
+            <li class="list-group-item">Task 1</li>
+            <li class="list-group-item">Task 2</li>
+            <li class="list-group-item">Task 3</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Weekly Schedule</h5>
+          <!-- Add a weekly schedule/calendar here -->
+          <!-- You can use plugins like FullCalendar or build a custom solution -->
+          <p>This is where your weekly schedule/calendar goes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS and dependencies (jQuery) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

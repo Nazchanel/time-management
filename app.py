@@ -1,130 +1,103 @@
 from flask import Flask, render_template, request, redirect
-import functions
 
-username = ""
-password = ""
+import sqlite3
+
 app = Flask(__name__)
 
-@app.route('/',  methods=['GET', 'POST'])
+logged_in_user = ""
+
+@app.route('/', methods=['GET', 'POST'])
 def login():
-    global username
-    global password
-        
-    username = ""
-    password = ""
+    global logged_in_user
+    
+    conn = sqlite3.connect('user_credentials.db')
+    cursor = conn.cursor()
 
     if request.method == 'POST':
         user_details = request.form
-        username = user_details['student_id']
+        username = user_details['username']
         password = user_details['password']
-        return redirect("/grades")
-        
-        
+
+        # Execute the query with placeholders
+        cursor.execute("SELECT * FROM user_credentials WHERE username = ?", (username,))
+
+        # Fetch the result
+        result = cursor.fetchone()
+
+        # Check if the result is not empty (i.e., username exists)
+        if result:
+            # Check if the password matches
+            if result[1] == password:  # Assuming the password column is the second column (index 1)
+                logged_in_user = username
+                print(f"Logged in user set: {logged_in_user}")
+                return redirect("/home")
+            else:
+                message = "Invalid password. Please try again."
+                
+                print(message)
+                return render_template('login.html', message = message)
+        else:
+            message = "User does not exist. Please signup."
+
+            print(message)
+
+            return render_template('login.html', message = message)
+
+    conn.close()
+
     return render_template('login.html')
 
-@app.route('/grades',  methods=['GET', 'POST'])
-def grades():
-    value = functions.returnGrades(username, password, .1, quarter=None)
-    functions.returnGradeTables(username = username, password = password, logged_in = False, quarter = None)
-    class_names = value[0]
-    class_grades = value[1]
-    update_time = value[2]
-    return render_template('grades.html',
-                            grade1=class_grades[0],
-                           grade2=class_grades[1], grade3=class_grades[2],
-                           grade4=class_grades[3], grade5=class_grades[4],
-                           grade6=class_grades[5], grade7=class_grades[6],
-                           grade8=class_grades[7], class1=class_names[0],
-                           class2=class_names[1],class3=class_names[2],
-                           class4=class_names[3], class5=class_names[4],
-                           class6=class_names[5], class7=class_names[6],
-                           class8=class_names[7], time=update_time)
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    conn = sqlite3.connect('user_credentials.db')
+    cursor = conn.cursor()
 
-@app.route('/1',  methods=['GET', 'POST'])
-def quarterOne():
-    quarter = 1
-    value = functions.returnGrades(username, password, 0, quarter)
-    functions.returnGradeTables(username=username, password=password,logged_in=True, quarter=quarter)
+    # Create the user_credentials table with a unique constraint on the username column
+    cursor.execute('''CREATE TABLE IF NOT EXISTS user_credentials (username TEXT NOT NULL UNIQUE, password TEXT NOT NULL);''')
 
-    class_names = value[0]
-    class_grades = value[1]
-    update_time = value[2]
+    new_user_schema = '''
+        INSERT INTO user_credentials(username, password)
+        VALUES (?, ?);
+    '''
+    if request.method == 'POST':
+        user_details = request.form
+        username = user_details['username']
+        password = user_details['password']
 
-    return render_template('grades.html',
-                            grade1=class_grades[0],
-                           grade2=class_grades[1], grade3=class_grades[2],
-                           grade4=class_grades[3], grade5=class_grades[4],
-                           grade6=class_grades[5], grade7=class_grades[6],
-                           grade8=class_grades[7], class1=class_names[0],
-                           class2=class_names[1],class3=class_names[2],
-                           class4=class_names[3], class5=class_names[4],
-                           class6=class_names[5], class7=class_names[6],
-                           class8=class_names[7], time=update_time)
+        try:
+            cursor.execute(new_user_schema, (username, password))
+            conn.commit()  # Commit the changes to the database
 
-@app.route('/2',  methods=['GET', 'POST'])
-def quarterTwo():
-    quarter = 2
-    value = functions.returnGrades(username, password, 0, quarter)
-    functions.returnGradeTables(username=username, password=password,logged_in=True, quarter=quarter)
+            message = "Signup Success!"
 
-    class_names = value[0]
-    class_grades = value[1]
-    update_time = value[2]
-    return render_template('grades.html',
-                            grade1=class_grades[0],
-                           grade2=class_grades[1], grade3=class_grades[2],
-                           grade4=class_grades[3], grade5=class_grades[4],
-                           grade6=class_grades[5], grade7=class_grades[6],
-                           grade8=class_grades[7], class1=class_names[0],
-                           class2=class_names[1],class3=class_names[2],
-                           class4=class_names[3], class5=class_names[4],
-                           class6=class_names[5], class7=class_names[6],
-                           class8=class_names[7], time=update_time)
+            print("Saved to database")
 
-@app.route('/3',  methods=['GET', 'POST'])
-def quarterThree():
-    quarter = 3
-    value = functions.returnGrades(username, password, 0, quarter)
-    functions.returnGradeTables(username=username, password=password,logged_in=True, quarter=quarter)
+            return render_template('signup.html', message = message)
+
+        except sqlite3.IntegrityError:
+            message = "Username is not available"
+
+            print("Duplicate entry. Try again.")
+
+            print(message)
+
+            return render_template('signup.html', message = message)
+
+    conn.close()  # Close the connection to the database
+    return render_template('signup.html')
+
+@app.route('/home', methods=['GET', 'POST'])
+def home():
+    print(f"Logged in user: {logged_in_user}")
+
+    if logged_in_user != '':
+        return render_template('home.html', username = logged_in_user)
+    else:
+        return render_template('login-message.html')
+        
+
     
-    class_names = value[0]
-    class_grades = value[1]
-    update_time = value[2]
-
-    return render_template('grades.html',
-                            grade1=class_grades[0],
-                           grade2=class_grades[1], grade3=class_grades[2],
-                           grade4=class_grades[3], grade5=class_grades[4],
-                           grade6=class_grades[5], grade7=class_grades[6],
-                           grade8=class_grades[7], class1=class_names[0],
-                           class2=class_names[1],class3=class_names[2],
-                           class4=class_names[3], class5=class_names[4],
-                           class6=class_names[5], class7=class_names[6],
-                           class8=class_names[7], time=update_time)
-
-@app.route('/4',  methods=['GET', 'POST'])
-def quarterFour():
-    quarter = 4
-    value = functions.returnGrades(username, password, 0, quarter)
-    functions.returnGradeTables(username=username, password=password,logged_in=True, quarter=quarter)
-
-    class_names = value[0]
-    class_grades = value[1]
-    update_time = value[2]
-
-    return render_template('grades.html',
-                            grade1=class_grades[0],
-                           grade2=class_grades[1], grade3=class_grades[2],
-                           grade4=class_grades[3], grade5=class_grades[4],
-                           grade6=class_grades[5], grade7=class_grades[6],
-                           grade8=class_grades[7], class1=class_names[0],
-                           class2=class_names[1],class3=class_names[2],
-                           class4=class_names[3], class5=class_names[4],
-                           class6=class_names[5], class7=class_names[6],
-                           class8=class_names[7], time=update_time)
+    
 
 if __name__ == '__main__':
-    # print("http://localhost:8080")
-    # serve(app, port=8080)
     app.run(debug=True, port=8080)
-    functions.clear_files()

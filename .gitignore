@@ -5,3 +5,8 @@ __pycache__
 dist
 build
 *.egg-info
+
+# Generate Database File
+*.db
+
+*test*

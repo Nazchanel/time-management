@@ -9,7 +9,7 @@ logged_in_user = ""
 @app.route('/', methods=['GET', 'POST'])
 def login():
     global logged_in_user
-    
+
     conn = sqlite3.connect('user_credentials.db')
     cursor = conn.cursor()
 
@@ -18,9 +18,12 @@ def login():
         username = user_details['username']
         password = user_details['password']
 
+        cursor.execute('''CREATE TABLE IF NOT EXISTS user_credentials (username TEXT NOT NULL UNIQUE, password TEXT NOT NULL);''')
+
         # Execute the query with placeholders
         cursor.execute("SELECT * FROM user_credentials WHERE username = ?", (username,))
 
+        
         # Fetch the result
         result = cursor.fetchone()
 

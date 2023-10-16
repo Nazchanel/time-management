@@ -11,3 +11,5 @@ build
 
 # Testing Files
 *test*
+
+templates/index.html

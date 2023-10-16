@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
-
+from copy import deepcopy
 import sqlite3
 
 app = Flask(__name__)
@@ -168,6 +168,34 @@ def task_save():
     tasks = []
 
     return redirect(url_for('home'))
-   
+
+@app.route('/remove-tasks', methods=['GET', 'POST'])
+def remove_tasks():
+    if logged_in_user != '':
+        return render_template('task-removal.html', string_list=get_tasks_for_username(logged_in_user))
+    else:
+        return render_template('login-message.html')
+
+@app.route('/delete', methods=['POST'])
+def delete():
+    conn = sqlite3.connect('user_data.db')
+    cursor = conn.cursor()
+
+    # Get the string to delete from the form
+    string_to_delete = request.form['string_to_delete']
+    string_list = get_tasks_for_username(logged_in_user)
+
+    if string_to_delete in string_list:
+        
+        # Execute the delete query
+        cursor.execute("DELETE FROM tasks WHERE username=? AND task_name=?", (logged_in_user, string_to_delete))
+
+        # Commit the changes
+        conn.commit()
+
+        # Close the connection
+        conn.close()
+    return redirect(url_for('remove_tasks'))
+
 if __name__ == '__main__':
     app.run(debug=True)

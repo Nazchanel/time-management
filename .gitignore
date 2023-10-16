@@ -6,7 +6,8 @@ dist
 build
 *.egg-info
 
-# Generate Database File
+# Generated Database File
 *.db
 
+# Testing Files
 *test*

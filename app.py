@@ -38,7 +38,8 @@ def login():
         password = user_details['password']
 
         cursor.execute('''CREATE TABLE IF NOT EXISTS user_credentials (username TEXT NOT NULL UNIQUE, password TEXT NOT NULL);''')
-
+        cursor.execute('''CREATE TABLE IF NOT EXISTS tasks (username TEXT NOT NULL, task_name TEXT NOT NULL, UNIQUE(username, task_name));''')
+        
         # Execute the query with placeholders
         cursor.execute("SELECT * FROM user_credentials WHERE username = ?", (username,))
 

@@ -13,3 +13,4 @@ build
 *test*
 
 templates/index.html
+templates/base.html

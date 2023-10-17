@@ -5,6 +5,7 @@ import sqlite3
 app = Flask(__name__)
 
 tasks = []
+priorities = []
 
 logged_in_user = ""
 
@@ -20,6 +21,14 @@ def get_tasks_for_username(username):
     task_names = [task[0] for task in tasks]
 
     return task_names
+
+def send_notification(message):
+    notification.notify(
+        title="To-Do Reminder",
+        message=message,
+        app_name='Time Management App',
+        timeout=4  # Notification will stay for 10 seconds
+    )
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -38,7 +47,7 @@ def login():
         password = user_details['password']
 
         cursor.execute('''CREATE TABLE IF NOT EXISTS user_credentials (username TEXT NOT NULL UNIQUE, password TEXT NOT NULL);''')
-        cursor.execute('''CREATE TABLE IF NOT EXISTS tasks (username TEXT NOT NULL, task_name TEXT NOT NULL, UNIQUE(username, task_name));''')
+        cursor.execute('''CREATE TABLE IF NOT EXISTS tasks (username TEXT NOT NULL, task_name TEXT NOT NULL, priority INTEGER NOT NULL, UNIQUE(username, task_name));''')
         
         # Execute the query with placeholders
         cursor.execute("SELECT * FROM user_credentials WHERE username = ?", (username,))
@@ -130,8 +139,23 @@ def task_addition():
 
 @app.route('/add_task', methods=['POST'])
 def add_task():
-    task = request.form.get('task')
-    tasks.append(task)
+    global priorities
+    global tasks
+
+    importance = request.form.get('Priority')
+    
+    importance_value = None
+
+    if importance == 'EI':
+        importance_value = 1
+    elif importance == 'I':
+        importance_value = 0
+    else:
+        importance_value = -1
+        
+    tasks.append(request.form.get('task'))
+    priorities.append(importance_value)
+    
     return redirect(url_for('task_addition'))
 
 @app.route('/remove_task/<task>', methods=['POST'])
@@ -142,31 +166,30 @@ def remove_task(task):
 @app.route('/save-tasks')
 def task_save():
     global tasks
+    global priorities
 
     conn = sqlite3.connect('user_data.db')
     cursor = conn.cursor()
 
-    cursor.execute('''CREATE TABLE IF NOT EXISTS tasks (username TEXT NOT NULL, task_name TEXT NOT NULL, UNIQUE(username, task_name));''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS tasks (username TEXT NOT NULL, task_name TEXT NOT NULL, priority INTEGER NOT NULL, UNIQUE(username, task_name));''')
 
     # SQL save
 
     # Prepare the INSERT statement
-    new_user_schema = '''
-        INSERT INTO tasks(username, task_name)
-        VALUES (?, ?);
+    new_task_schema = '''
+        INSERT INTO tasks(username, task_name, priority)
+        VALUES (?, ?, ?);
     '''
-    for i in tasks:
-        cursor.execute(new_user_schema, (logged_in_user, i))
+    for i in range(len(tasks)):
+        cursor.execute(new_task_schema, (logged_in_user, tasks[i], priorities[i]))
 
     # Commit the changes and close the connection
     conn.commit()
     conn.close()
 
-    print(tasks)
-    
     # Clears Tasks after saving them to database
     tasks = []
-
+    priorities = []
     return redirect(url_for('home'))
 
 @app.route('/remove-tasks', methods=['GET', 'POST'])

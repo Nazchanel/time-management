@@ -14,6 +14,9 @@
         <li class="nav-item">
           <a class="nav-link" href="/">Logout</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/timer">Timer</a>
+        </li>
       </ul>
     </div>
   </nav>
@@ -30,39 +33,53 @@
       </div>
       
       <div class="row">
-
+        
         <div class="col-lg-4 mb-4">
           <div class="card">
-              <div class="card-body">
-                  <h5 class="card-title">Upcoming Tasks</h5>
-                  <ul class="list-group">
-                      {% for task, priority in tasks_and_priorities %}
-                          <li class="list-group-item">
-                              {{ task }} (
-                              {% if priority == 1 %}
-                                  Very Important
-                              {% elif priority == 0 %}
-                                  Important
-                              {% elif priority == -1 %}
-                                  Not Important
-                              {% else %}
-                                  Unknown
-                              {% endif %}
-                              )
-                          </li>
-                      {% endfor %}
-                  </ul>
-              </div>
+            <div class="card-body">
+              <h5 class="card-title">Upcoming Tasks</h5>
+              <ul class="list-group">
+                {% for task, priority in tasks_and_priorities %}
+                <li class="list-group-item">
+                  {{ task }} (
+                  {% if priority == 1 %}
+                  Very Important
+                  {% elif priority == 0 %}
+                  Important
+                  {% elif priority == -1 %}
+                  Not Important
+                  {% else %}
+                  Unknown
+                  {% endif %}
+                  )
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
           </div>
-      </div>
-        
+        </div>
         <div class="col-lg-8">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Weekly Schedule</h5>
-              <!-- Add a weekly schedule/calendar here -->
-              <!-- You can use plugins like FullCalendar or build a custom solution -->
-              <p>This is where your weekly schedule/calendar goes.</p>
+              <h5 class="card-title">Today's Calendar Events (Google Calendar)</h5>
+              <div class="container">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Event Name</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for event in events %}
+                    <tr>
+                      <td>{{ event['start']['formatted'] }}</td>
+                      <td>{{ event['summary'] }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

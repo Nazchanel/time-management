@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+    <h2>Remaining Time:</h2>
+    <div id="timer"></div>
+
+    <script>
+        function updateTimer() {
+            $.get('/get_remaining_time', function(data) {
+                const formattedTime = formatTime(data.hours, data.minutes, data.seconds);
+                $('#timer').text(formattedTime);
+            });
+        }
+
+        function formatTime(hours, minutes, seconds) {
+            return `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
+        }
+
+        function padZero(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        // Update the timer every second
+        setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>

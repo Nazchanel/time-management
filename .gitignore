@@ -1,3 +1,4 @@
+# General
 venv
 .idea
 __pycache__
@@ -11,7 +12,9 @@ build
 
 # Testing Files
 *test*
-
 templates/index.html
 templates/base.html
+templates/events.html
+
+# Credential Files (Google Calendar API)
 *.json

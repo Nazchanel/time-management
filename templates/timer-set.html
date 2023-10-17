@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+</head>
+<body>
+    <h1>Countdown Timer</h1>
+    <form action="/start_timer" method="post">
+        <label for="hours">Hours:</label>
+        <input type="number" name="hours" id="hours" required min="0">
+        <label for="minutes">Minutes:</label>
+        <input type="number" name="minutes" id="minutes" required min="0">
+        <label for="seconds">Seconds:</label>
+        <input type="number" name="seconds" id="seconds" required min="0">
+        <button type="submit">Start Timer</button>
+    </form>
+</body>
+</html>

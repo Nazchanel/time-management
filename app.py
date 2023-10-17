@@ -8,18 +8,26 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import datetime
 import os
+import time
+from threading import Thread
+from plyer import notification
 
 # If modifying these scopes, delete the file token.json.
+# Google Calender API Scopes
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 app = Flask(__name__)
-
 app.config["CACHE_TYPE"] = "null"
 
 tasks = []
 priorities = []
 
 logged_in_user = ""
+
+# Global variables for remaining time
+remaining_hours = 0
+remaining_minutes = 0
+remaining_seconds = 0
 
 def get_tasks_for_username(username):
     connection = sqlite3.connect('user_data.db')
@@ -101,6 +109,77 @@ def get_today_events():
     events = events_result.get('items', [])
     return events
 
+def send_notification(message):
+    notification.notify(
+        title="To-Do Reminder",
+        message=message,
+        app_name='Time Management App',
+        timeout=4  # Notification will stay for 10 seconds
+    )
+
+# If the user has inputted a time
+inputted = False
+def countdown(h, m, s):
+    global remaining_hours, remaining_minutes, remaining_seconds
+
+    # Set global variables
+    remaining_hours = h
+    remaining_minutes = m
+    remaining_seconds = s
+
+    # Calculate the total number of seconds
+    total_seconds = h * 3600 + m * 60 + s
+
+    # While loop that checks if total_seconds reaches zero
+    # If not zero, decrement total time by one second
+    while total_seconds > 0:
+        # Update global variables
+        remaining_hours = total_seconds // 3600
+        remaining_minutes = (total_seconds % 3600) // 60
+        remaining_seconds = total_seconds % 60
+
+        # Delays the program one second
+        time.sleep(1)
+
+        # Reduces total time by one second
+        total_seconds -= 1
+
+@app.route('/timer')
+def timer_set():
+    return render_template('timer-set.html')
+
+@app.route('/start_timer', methods=['POST'])
+def start_timer():
+    global inputted
+    if request.method == 'POST':
+        # Get inputs from the form
+        h = int(request.form['hours'])
+        m = int(request.form['minutes'])
+        s = int(request.form['seconds'])
+
+        inputted = True
+
+        # Create a thread for the countdown function
+        countdown_thread = Thread(target=countdown, args=(h, m, s))
+        countdown_thread.start()
+
+    return render_template('timer.html')
+
+@app.route('/get_remaining_time')
+def get_remaining_time():
+    global remaining_hours, remaining_minutes, remaining_seconds, inputted
+    print(f"\n\nInputted Value: {inputted}\n\n")
+
+    print(remaining_seconds)
+
+    if remaining_seconds == 1 and inputted:
+        send_notification("TIMER DONE")
+        inputted = False
+    return {
+        'hours': remaining_hours,
+        'minutes': remaining_minutes,
+        'seconds': remaining_seconds
+    }
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -199,9 +278,14 @@ def home():
 
         tasks_and_priorities = list(zip(tasks_for_username, priorities_for_username))
         tasks_and_priorities.sort(key=lambda x: x[1], reverse=True)
+
+        events = get_today_events()
+        events.sort(key=lambda x: x['start'].get('dateTime', x['start'].get('date')))
         
+        for event in events:
+            event['start']['formatted'] = format_datetime(event['start'].get('dateTime', event['start'].get('date')))
         
-        return render_template('home.html', username=logged_in_user, tasks_and_priorities=tasks_and_priorities)
+        return render_template('home.html', username= logged_in_user, tasks_and_priorities= tasks_and_priorities, events= events)
     else:
         return render_template('login-message.html')
 
@@ -300,14 +384,18 @@ def delete():
         conn.close()
     return redirect(url_for('remove_tasks'))
 
-@app.route('/google-cal')
-def list_events():
-    events = get_today_events()
-    events.sort(key=lambda x: x['start'].get('dateTime', x['start'].get('date')))
-    for event in events:
-        event['start']['formatted'] = format_datetime(event['start'].get('dateTime', event['start'].get('date')))
-    return render_template('events.html', events=events)
 
+# Deprecated Code for testing and modification of the Google Calendar API
+
+# @app.route('/google-cal')
+# def list_events():
+#     events = get_today_events()
+#     events.sort(key=lambda x: x['start'].get('dateTime', x['start'].get('date')))
+#     for event in events:
+#         event['start']['formatted'] = format_datetime(event['start'].get('dateTime', event['start'].get('date')))
+#     return render_template('events.html', events=events)
+
+# 404 error page (invalid url)
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('404.html'), 404

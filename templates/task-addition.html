@@ -30,6 +30,14 @@
         <form action="{{ url_for('add_task') }}" method="POST">
             <label for="task">Add Task:</label>
             <input type="text" id="task" name="task" required>
+            <label for="dropdown_content">Priority:</label>
+            <div class = "dropdown_content">
+                <select name="Priority">
+                    <option value="EI">Extremely Important</option>
+                    <option value="I">Imporant</option>
+                    <option value="NI">Not Important</option>
+                    </select>
+                </div>
             <button type="submit">Add</button>
         </form>
         <ul>

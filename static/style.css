@@ -56,3 +56,6 @@ li {
     border-radius: 4px;
 }
 
+.dropdown_content {
+    margin-bottom: 12px;
+}

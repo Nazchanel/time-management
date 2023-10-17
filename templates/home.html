@@ -30,18 +30,32 @@
       </div>
       
       <div class="row">
+
         <div class="col-lg-4 mb-4">
           <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Upcoming Tasks</h5>
-              <ul class="list-group">
-                {% for task in tasks %}
-                  <li class="list-group-item">{{ task }}</li>
-                {% endfor %}
-              </ul>
-            </div>
+              <div class="card-body">
+                  <h5 class="card-title">Upcoming Tasks</h5>
+                  <ul class="list-group">
+                      {% for task, priority in tasks_and_priorities %}
+                          <li class="list-group-item">
+                              {{ task }} (
+                              {% if priority == 1 %}
+                                  Very Important
+                              {% elif priority == 0 %}
+                                  Important
+                              {% elif priority == -1 %}
+                                  Not Important
+                              {% else %}
+                                  Unknown
+                              {% endif %}
+                              )
+                          </li>
+                      {% endfor %}
+                  </ul>
+              </div>
           </div>
-        </div>
+      </div>
+        
         <div class="col-lg-8">
           <div class="card">
             <div class="card-body">

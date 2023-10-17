@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>404 Not Found</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+        }
+        .error-container {
+            text-align: center;
+            animation: bounce 2s infinite;
+        }
+        .error-code {
+            font-size: 120px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .error-message {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #495057;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-30px);
+            }
+            60% {
+                transform: translateY(-15px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">404</div>
+        <div class="error-message">Oops! Page not found.</div>
+        <!-- Feel free to add more elements or customize as needed -->
+    </div>
+
+    <!-- Bootstrap JS and dependencies (optional) -->

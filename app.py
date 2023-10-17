@@ -22,6 +22,19 @@ def get_tasks_for_username(username):
 
     return task_names
 
+def get_priority_for_username(username):
+    connection = sqlite3.connect('user_data.db')
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT priority FROM tasks WHERE username=?", (username,))
+
+    tasks = cursor.fetchall()
+    connection.close()
+
+    task_names = [task[0] for task in tasks]
+
+    return task_names
+
 def send_notification(message):
     notification.notify(
         title="To-Do Reminder",
@@ -123,7 +136,13 @@ def home():
 
     if logged_in_user != '':
         tasks_for_username = get_tasks_for_username(logged_in_user)
-        return render_template('home.html', username=logged_in_user, tasks=tasks_for_username)
+        priorities_for_username = get_priority_for_username(logged_in_user)
+
+        tasks_and_priorities = list(zip(tasks_for_username, priorities_for_username))
+        tasks_and_priorities.sort(key=lambda x: x[1], reverse=True)
+        
+        
+        return render_template('home.html', username=logged_in_user, tasks_and_priorities=tasks_and_priorities)
     else:
         return render_template('login-message.html')
 
@@ -219,6 +238,11 @@ def delete():
         # Close the connection
         conn.close()
     return redirect(url_for('remove_tasks'))
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
 
 if __name__ == '__main__':
     app.run(debug=True)

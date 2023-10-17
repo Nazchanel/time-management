@@ -1,8 +1,20 @@
 from flask import Flask, render_template, request, redirect, url_for
 from copy import deepcopy
 import sqlite3
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+import datetime
+import os
+
+# If modifying these scopes, delete the file token.json.
+SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 app = Flask(__name__)
+
+app.config["CACHE_TYPE"] = "null"
 
 tasks = []
 priorities = []
@@ -42,6 +54,53 @@ def send_notification(message):
         app_name='Time Management App',
         timeout=4  # Notification will stay for 10 seconds
     )
+
+def get_calendar_service():
+    creds = None
+
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+
+    service = build('calendar', 'v3', credentials=creds)
+    return service
+
+def format_datetime(datetime_str):
+    # Parse the datetime string
+    datetime_obj = datetime.datetime.fromisoformat(datetime_str)
+    
+    # Format the date as "Month Day"
+    formatted_date = datetime_obj.strftime('%B %d')
+    
+    # Format the time in a more human-readable format
+    formatted_time = datetime_obj.strftime('%I:%M %p')
+    
+    return f"{formatted_date} ({formatted_time})"
+
+def get_today_events():
+    service = get_calendar_service()
+    now = datetime.datetime.now()
+    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    # Format start and end times in ISO format
+    start_of_day_iso = start_of_day.isoformat() + 'Z'
+    end_of_day_iso = end_of_day.isoformat() + 'Z'
+    
+    events_result = service.events().list(calendarId='primary', timeMin=start_of_day_iso, timeMax=end_of_day_iso,
+                                          maxResults=10, singleEvents=True, orderBy='startTime').execute()
+    events = events_result.get('items', [])
+    return events
+
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -200,8 +259,10 @@ def task_save():
         VALUES (?, ?, ?);
     '''
     for i in range(len(tasks)):
-        cursor.execute(new_task_schema, (logged_in_user, tasks[i], priorities[i]))
-
+        try:
+            cursor.execute(new_task_schema, (logged_in_user, tasks[i], priorities[i]))
+        except sqlite3.IntegrityError:
+            return redirect(url_for("task_save"))
     # Commit the changes and close the connection
     conn.commit()
     conn.close()
@@ -238,6 +299,14 @@ def delete():
         # Close the connection
         conn.close()
     return redirect(url_for('remove_tasks'))
+
+@app.route('/google-cal')
+def list_events():
+    events = get_today_events()
+    events.sort(key=lambda x: x['start'].get('dateTime', x['start'].get('date')))
+    for event in events:
+        event['start']['formatted'] = format_datetime(event['start'].get('dateTime', event['start'].get('date')))
+    return render_template('events.html', events=events)
 
 @app.errorhandler(404)
 def not_found_error(error):

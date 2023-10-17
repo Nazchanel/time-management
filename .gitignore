@@ -14,3 +14,4 @@ build
 
 templates/index.html
 templates/base.html
+*.json

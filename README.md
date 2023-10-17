@@ -9,6 +9,116 @@ pip install -r requirements.txt
 Eshan's time on this project:\
 [![wakatime](https://wakatime.com/badge/user/d2cf396a-1b98-4795-9559-b880684c63b7/project/018b25b5-8d65-4d6e-9fdd-8758cee7e4a9.svg)](https://wakatime.com/badge/user/d2cf396a-1b98-4795-9559-b880684c63b7/project/018b25b5-8d65-4d6e-9fdd-8758cee7e4a9?style=flat-square)
 
+## Roles
+
+<div style="display: flex; justify-content: space-between; margin: 20px;">
+
+  <!-- Table 1: Lead Developers -->
+  <table>
+    <thead>
+      <tr>
+        <th>Names</th>
+        <th>Position</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Elijah</td>
+        <td>Overall Leader</td>
+      </tr>
+      <tr>
+        <td>Eshan</td>
+        <td>Lead Developer</td>
+      </tr>
+      <tr>
+        <td>Abhiram</td>
+        <td>Lead Developer</td>
+      </tr>
+      <tr>
+        <td>Kapilesh</td>
+        <td>Lead Developer</td>
+      </tr>
+      <tr>
+        <td>Ayush</td>
+        <td>Lead HTML Developer</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Table 2: HTML Developers -->
+  <table>
+    <thead>
+      <tr>
+        <th>Names</th>
+        <th>Position</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Naythan</td>
+        <td>HTML Developer</td>
+      </tr>
+      <tr>
+        <td>Manas</td>
+        <td>HTML Developer</td>
+      </tr>
+      <tr>
+        <td>Suchay</td>
+        <td>HTML Developer</td>
+      </tr>
+      <tr>
+        <td>Sithranjan</td>
+        <td>HTML Developer</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Table 3: Designers -->
+  <table>
+    <thead>
+      <tr>
+        <th>Names</th>
+        <th>Position</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Mansha</td>
+        <td>Head Design</td>
+      </tr>
+      <tr>
+        <td>Rishitha</td>
+        <td>Design</td>
+      </tr>
+      <tr>
+        <td>Kaveh</td>
+        <td>Design</td>
+      </tr>
+      <tr>
+        <td>Rajeswari</td>
+        <td>Design</td>
+      </tr>
+      <tr>
+        <td>Rithwik</td>
+        <td>Design</td>
+      </tr>
+      <tr>
+        <td>Revanth</td>
+        <td>Design</td>
+      </tr>
+      <tr>
+        <td>Jordan</td>
+        <td>Design</td>
+      </tr>
+      <tr>
+        <td>Kevin</td>
+        <td>Design</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
 
 ## Google Calendar API Setup
 

@@ -17,4 +17,4 @@ templates/base.html
 templates/events.html
 
 # Credential Files (Google Calendar API)
-*.json
+token.json

@@ -13,8 +13,11 @@ build
 # Testing Files
 *test*
 templates/index.html
-templates/base.html
 templates/events.html
 
+# Generated Class HTML
+templates/*class*.html
+
 # Credential Files (Google Calendar API)
-*.json
+token.json
+credentials.json

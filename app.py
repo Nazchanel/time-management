@@ -1,28 +1,41 @@
 from flask import Flask, render_template, request, redirect, url_for
 from copy import deepcopy
 import sqlite3
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 import datetime
 import os
 import time
 from threading import Thread
 from plyer import notification
+from hacapi import hac
+import json
+from bs4 import BeautifulSoup
+
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+
+app = Flask(__name__)
+app.config["CACHE_TYPE"] = "null"
 
 # If modifying these scopes, delete the file token.json.
 # Google Calender API Scopes
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
-app = Flask(__name__)
-app.config["CACHE_TYPE"] = "null"
+# If the user has inputted a time
+inputted = False
+
+# HAC User Object
+acc = None
 
 tasks = []
 priorities = []
 
 logged_in_user = ""
+
+hac_username = ""
+hac_password = ""
 
 # Global variables for remaining time
 remaining_hours = 0
@@ -97,15 +110,24 @@ def format_datetime(datetime_str):
 def get_today_events():
     service = get_calendar_service()
     now = datetime.datetime.now()
+    print(f"\n\nThe current datetime: {now}\n\n")
     start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
     end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=999999)
-
+    print(f"\n\nThe Start of the Day: {start_of_day}\n\nThe End Of the Day: {end_of_day}\n\n")
+    
     # Format start and end times in ISO format
     start_of_day_iso = start_of_day.isoformat() + 'Z'
     end_of_day_iso = end_of_day.isoformat() + 'Z'
+    print(f"\n\nThe Start of the Day ISO: {start_of_day_iso}\n\nThe End Of the Day ISO: {end_of_day_iso}\n\n")
     
     events_result = service.events().list(calendarId='primary', timeMin=start_of_day_iso, timeMax=end_of_day_iso,
                                           maxResults=10, singleEvents=True, orderBy='startTime').execute()
+
+    print(f"\n\nEvents Results: {type(events_result)}\n\n")
+
+    with open("sample.json", "w") as outfile: 
+        json.dump(events_result, outfile)
+
     events = events_result.get('items', [])
     return events
 
@@ -117,8 +139,6 @@ def send_notification(message):
         timeout=4  # Notification will stay for 10 seconds
     )
 
-# If the user has inputted a time
-inputted = False
 def countdown(h, m, s):
     global remaining_hours, remaining_minutes, remaining_seconds
 
@@ -187,6 +207,7 @@ def login():
 
     if request.method == "GET" and logged_in_user != "":
         logged_in_user = ""
+        # os.remove('token.json')
         print("\nUser Logged Out!\n")    
 
     conn = sqlite3.connect('user_data.db')
@@ -396,6 +417,80 @@ def delete():
 #     return render_template('events.html', events=events)
 
 # 404 error page (invalid url)
+
+@app.route('/hac', methods=['GET', 'POST'])
+def hac_login():
+    global hac_username
+    global hac_password
+    global acc
+    hac_username = ""
+    hac_password = ""
+
+    for i in range(1,9):
+        file_name = f"templates/class{i}.html"
+        with open(file_name, "w") as text_file:
+            text_file.write("")
+
+
+
+
+    # HAC Login Form
+    if request.method == 'POST':
+        user_details = request.form
+        
+        hac_username = user_details['student_id']
+        hac_password = user_details['password']
+        
+        acc = hac.Account(hac_username, hac_password)
+        
+        return redirect("/hac-grades")
+        
+        
+    return render_template('hac-login.html')
+
+@app.route('/hac-grades',  methods=['GET', 'POST'])
+def grades():
+    current_assignments = acc.return_current_assignments_html()
+
+    # Removes the column/row indexes from the Pandas Dataframe
+    def remove_th_elements(html_file_path):
+        with open(html_file_path, 'r') as file:
+            # Read the HTML content
+            html_content = file.read()
+
+        # Parse the HTML using BeautifulSoup
+        soup = BeautifulSoup(html_content, 'html.parser')
+
+        # Find and remove all <th> elements
+        for th in soup.find_all('th'):
+            th.decompose()
+
+        # Save the modified HTML back to the file
+        with open(html_file_path, 'w') as file:
+            file.write(str(soup))
+            
+    # Writes the assignments to their corresponding HTMLs
+    for i in range(len(current_assignments)):
+        file_name = f"templates/class{i+1}.html"
+        with open(file_name, "w") as text_file:
+            text_file.write(current_assignments[i])
+        remove_th_elements(file_name)
+
+    grade_class_list = acc.return_current_grades()
+    class_names = grade_class_list[0]
+    class_grades = grade_class_list[1]
+    
+    return render_template('hac-grades.html',
+                            grade1=class_grades[0],
+                           grade2=class_grades[1], grade3=class_grades[2],
+                           grade4=class_grades[3], grade5=class_grades[4],
+                           grade6=class_grades[5], grade7=class_grades[6],
+                           grade8=class_grades[7], class1=class_names[0],
+                           class2=class_names[1],class3=class_names[2],
+                           class4=class_names[3], class5=class_names[4],
+                           class6=class_names[5], class7=class_names[6],
+                           class8=class_names[7])
+
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('404.html'), 404

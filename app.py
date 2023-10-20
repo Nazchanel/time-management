@@ -429,10 +429,7 @@ def hac_login():
     for i in range(1,9):
         file_name = f"templates/class{i}.html"
         with open(file_name, "w") as text_file:
-            text_file.write("")
-
-
-
+            text_file.write("<p>No Assignments Entered</p>")
 
     # HAC Login Form
     if request.method == 'POST':
@@ -452,7 +449,7 @@ def hac_login():
 def grades():
     current_assignments = acc.return_current_assignments_html()
 
-    # Removes the column/row indexes from the Pandas Dataframe
+    # Removes the column/row indexes from the Pandas DataFrame
     def remove_th_elements(html_file_path):
         with open(html_file_path, 'r') as file:
             # Read the HTML content

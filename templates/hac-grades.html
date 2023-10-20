@@ -2,8 +2,7 @@
 
 {% block head %}
 
-<title>HAC Notifier</title>
-
+<title>HAC Assignments</title>
 
 {% endblock %}
 
@@ -13,23 +12,12 @@
     <div class="nav-wrapper">
       <div class="left-side">
         <div class="brand">
-          <div>HAC Notifier</div>
+          <div>HAC Assignments</div>
         </div>
       </div>
       <div class="right-side">
         <div class="nav-link-wrapper">
-          <a href="/grades">Reload Grades</a>
-        </div>
-        <div class="nav-link-wrapper">
-          <select name="menu" id="menu">
-            <option value="#">Menu</option>
-            <optgroup label="Quarter">
-              <option value="/1">1</option>
-              <option value="/2">2</option>
-              <option value="/3">3</option>
-              <option value="/4">4</option>
-            </optgroup>
-          </select>
+          <a href="/hac-grades">Reload Grades</a>
         </div>
         <div class="nav-link-wrapper">
           <a href="/">Sign Out</a>
@@ -50,7 +38,7 @@
   
 
 
-<h2 style="font-size: 1.5em;">Current Grades: (Last Updated at {{ time }} CST) </h2>
+<h2 style="font-size: 1.5em;">Current Grades:</h2>
 
 <h2>{{ class1 }}: {{ grade1 }}</h2>
 {% include 'class1.html' %}

@@ -113,20 +113,20 @@ def get_today_events():
     print(f"\n\nThe current datetime: {now}\n\n")
     start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
     end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=999999)
-    print(f"\n\nThe Start of the Day: {start_of_day}\n\nThe End Of the Day: {end_of_day}\n\n")
+    # print(f"\n\nThe Start of the Day: {start_of_day}\n\nThe End Of the Day: {end_of_day}\n\n")
     
     # Format start and end times in ISO format
     start_of_day_iso = start_of_day.isoformat() + 'Z'
     end_of_day_iso = end_of_day.isoformat() + 'Z'
-    print(f"\n\nThe Start of the Day ISO: {start_of_day_iso}\n\nThe End Of the Day ISO: {end_of_day_iso}\n\n")
+    # print(f"\n\nThe Start of the Day ISO: {start_of_day_iso}\n\nThe End Of the Day ISO: {end_of_day_iso}\n\n")
     
     events_result = service.events().list(calendarId='primary', timeMin=start_of_day_iso, timeMax=end_of_day_iso,
                                           maxResults=10, singleEvents=True, orderBy='startTime').execute()
+                                          
+    # print(f"\n\nEvents Results: {type(events_result)}\n\n")
 
-    print(f"\n\nEvents Results: {type(events_result)}\n\n")
-
-    with open("sample.json", "w") as outfile: 
-        json.dump(events_result, outfile)
+    # with open("sample.json", "w") as outfile: 
+    #     json.dump(events_result, outfile)
 
     events = events_result.get('items', [])
     return events

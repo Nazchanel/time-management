@@ -56,8 +56,9 @@ li {
     border-radius: 4px;
 }
 
-.dropdown_content {
+.dropdown_menu {
     margin-bottom: 12px;
+    border-radius: 8px;
 }
 
 .nav-wrapper {

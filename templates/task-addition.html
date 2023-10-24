@@ -26,7 +26,7 @@
         
         <!-- Dummy navigation button in the top right corner -->
         <a href="/save-tasks" class="nav-button">Save Tasks</a>
-
+        
         <form action="{{ url_for('add_task') }}" method="POST">
             <label for="task">Add Task:</label>
             <input type="text" id="task" name="task" required>
@@ -36,18 +36,21 @@
                     <option value="EI">Extremely Important</option>
                     <option value="I">Imporant</option>
                     <option value="NI">Not Important</option>
-                    </select>
+                </select>
             </div>
+            <label for="due">Due Date:</label>
+            <input type="date" id="due" name="trip-start" value="2018-07-22" min="2018-01-01" max="2018-12-31" />
+            
             <button type="submit">Add</button>
         </form>
         <ul>
             {% for task in tasks %}
-                <li>
-                    {{ task }}
-                    <form action="{{ url_for('remove_task', task=task) }}" method="POST" style="display: inline;">
-                        <button type="submit">Remove</button>
-                    </form>
-                </li>
+            <li>
+                {{ task }}
+                <form action="{{ url_for('remove_task', task=task) }}" method="POST" style="display: inline;">
+                    <button type="submit">Remove</button>
+                </form>
+            </li>
             {% endfor %}
         </ul>
     </div>

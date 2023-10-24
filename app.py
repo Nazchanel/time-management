@@ -31,6 +31,7 @@ acc = None
 
 tasks = []
 priorities = []
+duedate_strings = []
 
 logged_in_user = ""
 
@@ -60,6 +61,19 @@ def get_priority_for_username(username):
     cursor = connection.cursor()
 
     cursor.execute("SELECT priority FROM tasks WHERE username=?", (username,))
+
+    tasks = cursor.fetchall()
+    connection.close()
+
+    task_names = [task[0] for task in tasks]
+
+    return task_names
+
+def get_duedate_for_username(username):
+    connection = sqlite3.connect('user_data.db')
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT duedates FROM tasks WHERE username=?", (username,))
 
     tasks = cursor.fetchall()
     connection.close()
@@ -219,7 +233,7 @@ def login():
         password = user_details['password']
 
         cursor.execute('''CREATE TABLE IF NOT EXISTS user_credentials (username TEXT NOT NULL UNIQUE, password TEXT NOT NULL);''')
-        cursor.execute('''CREATE TABLE IF NOT EXISTS tasks (username TEXT NOT NULL, task_name TEXT NOT NULL, priority INTEGER NOT NULL, UNIQUE(username, task_name));''')
+        cursor.execute('''CREATE TABLE IF NOT EXISTS tasks (username TEXT NOT NULL, task_name TEXT NOT NULL, priority INTEGER NOT NULL,  duedates TEXT NOT NULL, UNIQUE(username, task_name));''')
         
         # Execute the query with placeholders
         cursor.execute("SELECT * FROM user_credentials WHERE username = ?", (username,))
@@ -296,8 +310,9 @@ def home():
     if logged_in_user != '':
         tasks_for_username = get_tasks_for_username(logged_in_user)
         priorities_for_username = get_priority_for_username(logged_in_user)
+        duedates_for_username = get_duedate_for_username(logged_in_user)
 
-        tasks_and_priorities = list(zip(tasks_for_username, priorities_for_username))
+        tasks_and_priorities = list(zip(tasks_for_username, priorities_for_username, duedates_for_username))
         tasks_and_priorities.sort(key=lambda x: x[1], reverse=True)
 
         events = get_today_events()
@@ -324,9 +339,11 @@ def task_addition():
 def add_task():
     global priorities
     global tasks
+    global duedate_strings
 
     importance = request.form.get('Priority')
-    
+    duedate_string = request.form.get('due')
+
     importance_value = None
 
     if importance == 'EI':
@@ -338,6 +355,7 @@ def add_task():
         
     tasks.append(request.form.get('task'))
     priorities.append(importance_value)
+    duedate_strings.append(duedate_string)
     
     return redirect(url_for('task_addition'))
 
@@ -350,22 +368,24 @@ def remove_task(task):
 def task_save():
     global tasks
     global priorities
+    global duedate_strings
 
-    conn = sqlite3.connect('user_data.db')
+    conn = sqlite3.connect('user_data.db', timeout=10)
     cursor = conn.cursor()
 
-    cursor.execute('''CREATE TABLE IF NOT EXISTS tasks (username TEXT NOT NULL, task_name TEXT NOT NULL, priority INTEGER NOT NULL, UNIQUE(username, task_name));''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS tasks (username TEXT NOT NULL, task_name TEXT NOT NULL, priority INTEGER NOT NULL,  duedates TEXT NOT NULL, UNIQUE(username, task_name));''')
 
     # SQL save
 
     # Prepare the INSERT statement
     new_task_schema = '''
-        INSERT INTO tasks(username, task_name, priority)
-        VALUES (?, ?, ?);
+        INSERT INTO tasks(username, task_name, priority, duedates)
+        VALUES (?, ?, ?, ?);
     '''
+    print(duedate_strings)
     for i in range(len(tasks)):
         try:
-            cursor.execute(new_task_schema, (logged_in_user, tasks[i], priorities[i]))
+            cursor.execute(new_task_schema, (logged_in_user, tasks[i], priorities[i], duedate_strings[i]))
         except sqlite3.IntegrityError:
             return redirect(url_for("task_save"))
     # Commit the changes and close the connection
@@ -375,6 +395,7 @@ def task_save():
     # Clears Tasks after saving them to database
     tasks = []
     priorities = []
+    duedate_strings = []
     return redirect(url_for('home'))
 
 @app.route('/remove-tasks', methods=['GET', 'POST'])

@@ -42,7 +42,7 @@
             <div class="card-body">
               <h5 class="card-title">Upcoming Tasks</h5>
               <ul class="list-group">
-                {% for task, priority in tasks_and_priorities %}
+                {% for task, priority, duedates in tasks_and_priorities %}
                 <li class="list-group-item">
                   {{ task }} (
                   {% if priority == 1 %}
@@ -54,7 +54,7 @@
                   {% else %}
                   Unknown
                   {% endif %}
-                  )
+                  ) Due: duedates
                 </li>
                 {% endfor %}
               </ul>

@@ -19,8 +19,7 @@ templates/events.html
 templates/*class*.html
 
 # Credential Files (Google Calendar API)
-token.json
-credentials.json
+*.json
 
 # Virtual Environment
 tm

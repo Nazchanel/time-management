@@ -21,3 +21,6 @@ templates/*class*.html
 # Credential Files (Google Calendar API)
 token.json
 credentials.json
+
+# Virtual Environment
+tm

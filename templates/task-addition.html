@@ -34,14 +34,23 @@
             <div class = "dropdown_menu">
                 <select name="Priority">
                     <option value="EI">Extremely Important</option>
-                    <option value="I">Imporant</option>
+                    <option value="I">Important</option>
                     <option value="NI">Not Important</option>
                 </select>
             </div>
             <label for="due">Due Date:</label>
-            <input type="date" id="due" name="date" value="2018-07-22" min="2018-01-01" max="2018-12-31" />
-
-           
+            <input type="date" id="due" name="date" value="" />
+            
+            <script>
+                // Get the current date in the format YYYY-MM-DD
+                var currentDate = new Date().toISOString().split('T')[0];
+                
+                // Set the current date as the default value for the input
+                document.getElementById('due').value = currentDate;
+            </script>
+            
+            
+            
             <button type="submit">Add</button>
         </form>
         <ul>

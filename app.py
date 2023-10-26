@@ -289,7 +289,7 @@ def signup():
 
             print("Saved to database")
 
-            return render_template('signup.html', message = message)
+            return redirect("/")
 
         except sqlite3.IntegrityError:
             message = "Username is not available"
@@ -340,9 +340,13 @@ def add_task():
     global priorities
     global tasks
     global duedate_strings
+    from datetime import datetime
 
     importance = request.form.get('Priority')
     duedate_string = request.form.get('date')
+
+    duedate_string = datetime.strptime(duedate_string, "%Y-%m-%d")
+    duedate_string = duedate_string.strftime("%m-%d-%y")
 
     importance_value = None
 

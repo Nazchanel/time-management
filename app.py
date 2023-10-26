@@ -342,7 +342,7 @@ def add_task():
     global duedate_strings
 
     importance = request.form.get('Priority')
-    duedate_string = request.form.get('due')
+    duedate_string = request.form.get('date')
 
     importance_value = None
 

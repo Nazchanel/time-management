@@ -6,20 +6,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico&display=swap">
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   {% block head %}{% endblock %}
   <title>Login Page</title>
+  <style>
+    h2 {
+      font-family: 'Pacifico', cursive;
+    }
+  </style>
 </head>
 
 <body>
   <div class="container-fluid">
     <div class="row justify-content-center align-items-center vh-100">
-      <div class="col-md-4 col-sm-6 col-10">
+      <div class="col-md-4 col-sm-6 col-10 text-center"> <!-- Added text-center class here -->
+        <h2>No Monkin' Around!</h2>
+        
         <form class="login-form p-4" method="POST" action="">
-          <h2 class="text-center mb-4">Login</h2>
+          <div class="text-center mb-4">
+            <!-- Add the profile circle picture here -->
+            <img src="{{ url_for('static', filename='profile.png') }}" alt="Profile Picture" class="rounded-circle" style="width: 150px; height: 150px;">          
+          </div>
           <div class="form-group">
             <label for="username">Username</label>
             <input type="text" class="form-control" id="username" name="username" required>
@@ -35,7 +46,7 @@
       </div>
     </div>
   </div>
-
+  
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>

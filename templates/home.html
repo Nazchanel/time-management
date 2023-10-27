@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Add Bootstrap CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <title>Time Management Dashboard</title>
+  <script src="{{ url_for('static', filename='timer-script.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -31,8 +35,8 @@
         <hr>
         <p class="mb-0">Start by checking your upcoming tasks and planning your week below.</p>
         <!-- Add a button to go to the task adding page -->
-        <a href="/tasks" class="btn btn-primary mt-3">Add Task</a>
-        <a href="/remove-tasks" class="btn btn-primary mt-3">Remove Task</a>
+        <a href="/tasks" class="btn btn-primary mt-3 mr-3">Add Task</a>
+        <a href="/remove-tasks" class="btn btn-danger mt-3">Remove Task</a>
       </div>
       
       <div class="row">
@@ -44,18 +48,17 @@
               <ul class="list-group">
                 {% for task, priority, duedates in tasks_and_priorities %}
                 <li class="list-group-item">
-                  {{ task }} (
+                  {{ task }}
                   {% if priority == 1 %}
-                  Very Important
+                  <span class="badge badge-danger">Very Important</span>
                   {% elif priority == 0 %}
-                  Important
+                  <span class="badge badge-warning">Important</span>
                   {% elif priority == -1 %}
-                  Not Important
+                  <span class="badge badge-secondary">Not Important</span>
                   {% else %}
-                  Unknown
+                  <span class="badge badge-secondary">Unknown</span>
                   {% endif %}
-                  ) 
-                  <br>Due: {{duedates}}
+                  <br>Due: {{ duedates }}
                 </li>
                 {% endfor %}
               </ul>
@@ -88,9 +91,15 @@
           </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Bootstrap JS and dependencies (jQuery) -->
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Timer</h5>
+  
+          </div>
+        </div>
+      </div>
+   
+    <!-- Add Bootstrap JS and dependencies (jQuery) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

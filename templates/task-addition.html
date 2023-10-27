@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List</title>
+    <title>Add Tasks</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <style>
         /* Add this style for the dummy navigation button */
         .nav-button {
@@ -22,7 +23,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>To-Do List</h1>
+        <h1>Add Task</h1>
         
         <!-- Dummy navigation button in the top right corner -->
         <a href="/save-tasks" class="nav-button">Save Tasks</a>

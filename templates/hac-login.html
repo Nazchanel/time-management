@@ -1,40 +1,48 @@
-{% extends 'base.html' %}
-
-{% block head %}
-<title>Login</title>
-{% endblock %}
-
-{% block body %}
-<div class="container">
+<!DOCTYPE html>
+<html lang="en">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Login</title>
+    <script src="{{ url_for('static', filename='timer-script.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <div class="nav-wrapper">
-        <div class="left-side">
-            <div class="brand">
-                <div>HAC Notifier</div>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">HAC Login</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/home">Home</a>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+    <br>
+    <br>
+    <div class="center">
+        <form class="form" method="POST" action="">
+            
+            <div class="form-group">
+                <input autocomplete="Login" autocorrect="off" required type="name" name="student_id" id="student_id" class="input-field" autofocus="autofocus" placeholder="Student ID">
+            </div>
+            <br>
+            <div class="form-group">
+                <input autocomplete="Login" autocorrect="off" required type="password" name="password" id="password" class="input-field" autofocus="autofocus" placeholder="Password">
+            </div>
+            <br>    
+            <div class="form-group">
+                <a href="/hac-grades">  
+                    <input type="submit" name="submit" class="input-signup" value="Submit"> 
+                </a>
             </div>
         </div>
-    </div>
-</div>
-<br>
-<br>
-<br>
-
-<div class="center">
-    <form class="form" method="POST" action="">
-        
-        <div class="form-group">
-            <input autocomplete="Login" autocorrect="off" required type="name" name="student_id" id="student_id" class="input-field" autofocus="autofocus" placeholder="Student ID">
-        </div>
-        <br>
-        <div class="form-group">
-            <input autocomplete="Login" autocorrect="off" required type="password" name="password" id="password" class="input-field" autofocus="autofocus" placeholder="Password">
-        </div>
-        <br>    
-        <div class="form-group">
-            <a href="/hac-grades">  
-                <input type="submit" name="submit" class="input-signup" value="Submit"> 
-            </a>
-        </div>
-    </div>
-</form>
-{% endblock %}
+    </form>
+</body>
+</html>
